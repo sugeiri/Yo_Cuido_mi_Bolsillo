@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 void main() => runApp(Home());
+List<double> Lingresos=new List<double>();
+List<double> LGastos=new List<double>();
 double Ingresos = 0;
 double Gastos = 0;
 
@@ -70,7 +72,7 @@ class ProductBox extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Text("Saldo Actual en Cuentas",
+                  Text("Saldo Actual en Cuenta",
                       style: TextStyle(fontSize: 20, color: Colors.white60)),
                   Text(Saldo(),
                       style: TextStyle(
@@ -126,10 +128,20 @@ class ProductBox extends StatelessWidget {
   }
 
   String TIngresos() {
-    return "RD 0.00";
+    Ingresos=0;
+    for(var i in Lingresos)
+      {
+        Ingresos+=i;
+      }
+    return "RD "+Ingresos.toStringAsFixed(2);
   }
 
   String TGastos() {
-    return "RD 0.00";
+    Gastos=0;
+    for(var i in LGastos)
+    {
+      Gastos+=i;
+    }
+    return "RD "+Gastos.toStringAsFixed(2);
   }
 }
