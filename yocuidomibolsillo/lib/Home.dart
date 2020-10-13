@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:yocuidomibolsillo/Lista.dart';
+import 'package:yocuidomibolsillo/sqllite.dart';
+import 'Ingresos_Class.dart';
 
 void main() => runApp(Home());
-List<double> Lingresos = new List<double>();
-List<double> LGastos = new List<double>();
-double Ingresos = 0;
-double Gastos = 0;
+
+
+final dbHelper = DatabaseHelper.instance;
 
 class Home extends StatelessWidget {
   // It is the root widget of your application.
@@ -18,176 +19,196 @@ class Home extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
+class MyHomePage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState(){
+    return _HomePageState();
+  }
+}
+
+class _HomePageState extends State<MyHomePage> {
+  int _counter = 0;
+  int TIngresos = 0;
+  int TGastos = 0;
+  int TSaldo=0;
 
   @override
   Widget build(BuildContext context) {
+    _Consulta_Saldos();
     return Scaffold(
-        body: ListView(
-      padding: const EdgeInsets.fromLTRB(3.0, 12.0, 3.0, 12.0),
-      children: <Widget>[
-        ProductBox(
-            description: "Saldo Actual en Cuenta", Monto: 10000, tipo: "Total")
-      ],
-    ));
-  }
-}
-
-Widget _buildItem(Country country) {
-  return new ListTile(
-    title: new Text(country.name),
-    subtitle: new Text('Capital: ${country.capital}'),
-    leading: new Icon(Icons.map),
-    onTap: () {
-      print(country.name);
-    },
-  );
-}
-
-class ProductBox extends StatelessWidget {
-  ProductBox({Key key, this.description, this.Monto, this.tipo})
-      : super(key: key);
-  final String description;
-  final double Monto;
-  final String tipo;
-
-  final List<String> entries = <String>['A', 'B', 'C'];
-  final List<int> colorCodes = <int>[600, 500, 100];
-
-  Widget build(BuildContext context) {
-    return Container(
-      height: 800,
-      decoration: const BoxDecoration(
-        border: Border(
-          top: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
-          left: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
-          right: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
-          bottom: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
-        ),
-      ),
-      padding: EdgeInsets.all(2),
-      child: Card(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Expanded(
-                child: Container(
-                  height: 350,
-                  color: Colors.black87,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Text(description,
-                          style:
-                              TextStyle(fontSize: 20, color: Colors.white60)),
-                      Text(Saldo(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 30,
-                              color: Colors.white)),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Icon(
-                              Icons.trending_up,
-                              color: Colors.green,
-                              size: 30.0,
-                              semanticLabel:
-                                  'Text to announce in accessibility modes',
-                            ),
-                            Text("Ingresos",
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white60)),
-                            Text(TIngresos(),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25,
-                                    color: Colors.green)),
-                          ]),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Icon(
-                              Icons.trending_down,
-                              color: Colors.red,
-                              size: 30.0,
-                              semanticLabel:
-                                  'Text to announce in accessibility modes',
-                            ),
-                            Text("Gastos",
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.white60)),
-                            Text(TGastos(),
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25,
-                                    color: Colors.red)),
-                          ]),
-                    ],
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(3.0, 12.0, 3.0, 12.0),
+        children: <Widget>[
+          Container(
+            height: 800,
+            decoration: const BoxDecoration(
+              border: Border(
+                top: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
+                left: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
+                right: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
+                bottom: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
+              ),
+            ),
+            padding: EdgeInsets.all(2),
+            child: Card(
+              child:
+              Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <
+                  Widget>[
+                Expanded(
+                  child: Container(
+                    height: 350,
+                    color: Colors.black87,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: <Widget>[
+                        Text("Saldo Actual en Cuenta",
+                            style: TextStyle(fontSize: 20, color: Colors.white60)),
+                        Text("10000,",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 30,
+                                color: Colors.white)),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Icon(
+                                Icons.trending_up,
+                                color: Colors.green,
+                                size: 30.0,
+                                semanticLabel:'',
+                              ),
+                              Text("Ingresos",
+                                  style:
+                                  TextStyle(fontSize: 20, color: Colors.white60)),
+                              Text("RD "+TIngresos.toStringAsFixed(2),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                      color: Colors.green)),
+                            ]),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Icon(
+                                Icons.trending_down,
+                                color: Colors.red,
+                                size: 30.0,
+                                semanticLabel:'Text to announce in accessibility modes',
+                              ),
+                              Text("Gastos",
+                                  style:
+                                  TextStyle(fontSize: 20, color: Colors.white60)),
+                              Text("RD "+TGastos.toStringAsFixed(2),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                      color: Colors.red)),
+                            ]),
+                      ],
+                    ),
                   ),
                 ),
+                Container(
+                  height: 50,
+                  child: Text("INGRESOS",
+                      style: TextStyle(fontSize: 20, color: Colors.green)),
+                ),
+                Expanded(
+                    child: FutureBuilder<List>(
+                      future: dbHelper.getAllIngresos(),
+                      initialData: List(),
+                      builder: (context, snapshot) {
+                        return snapshot.hasData ?
+                        new ListView.builder(
+                          padding: const EdgeInsets.all(10.0),
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, i) {
+                            return _buildRow(snapshot.data[i]);
+                          },
+                        )
+                            : Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
+                    )
+                ),
+                Container(
+                  height: 50,
+                  child: Text("GASTOS",
+                      style: TextStyle(fontSize: 20, color: Colors.red)),
+                ),
+                Expanded(
+                    child:FutureBuilder<List>(
+                    future: dbHelper.getAllGastos(),
+                    initialData: List(),
+                    builder: (context, snapshot) {
+                      return snapshot.hasData ?
+                      new ListView.builder(
+                        padding: const EdgeInsets.all(10.0),
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (context, i) {
+                          return _buildGastos(snapshot.data[i]);
+                        },
+                      )
+                          : Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    },
+                  )
+                ),
+              ]
               ),
-              Container(
-                height: 50,
-                child: Text("INGRESOS", style: TextStyle(fontSize: 20, color: Colors.green)),
-              ),
-              Expanded(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      border: Border(
-                        top: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
-                        left: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
-                        right: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
-                        bottom: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
-                      ),
-                    ),
-                    height: 200,
-                    child: ListView(children: countries.map(_buildItem).toList()),
-
-              )),
-              Container(
-                height: 50,
-                child: Text("GASTOS", style: TextStyle(fontSize: 20, color: Colors.red)),
-              ),
-              Expanded(
-                  child: Container(
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          top: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
-                          left: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
-                          right: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
-                          bottom: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
-                        ),
-                      ),
-                      height: 200,
-                      child: ListView(
-                        children: countries.map(_buildItem).toList(),
-                      ))),
-            ]),
+            ),
+          ),
+        ],
       ),
     );
   }
+  void _Consulta_Saldos() async {
+    int LIngresos = 0;
+    int LGastos = 0;
+    final Ingresos = await dbHelper.queryIngresosAllRows();
+    Ingresos.forEach((row) {
+      LIngresos += int.parse(row['monto'].toString());
+    });
+    final Gastos = await dbHelper.queryGastosAllRows();
+    Gastos.forEach((row) {
+      LIngresos += int.parse(row['monto'].toString());
+    });
+    setState(() {
+      TIngresos=LIngresos;
+      TGastos=LGastos;
+    });
+  }
+  Widget _buildRow(Ingresos ingresos) {
+    /*return new ListTile(
+      title: new Text(ingresos.monto.toStringAsFixed(2)),
+    );*/
+    return new ListTile(
+        title: new Text('${ingresos.descripcion.toUpperCase()} '),
+        subtitle: new Text('${ingresos.fecha} ---> ${ingresos.monto.toStringAsFixed(2)}')
+      );
 
-  String Saldo() {
-    double s = Ingresos - Gastos;
-    return "RD " + s.toStringAsFixed(2);
+
+  }
+  Widget _buildGastos(Gastos gastos) {
+    return new ListTile(
+        title: new Text('${gastos.descripcion.toUpperCase()} '),
+        subtitle: new Text('${gastos.fecha} ---> ${gastos.monto.toStringAsFixed(2)}')
+    );
+
+    /*setState(() {
+      return new ListTile(
+        title: new Text(gastos.fecha),
+        subtitle: new Text('Cat: ${gastos.categoria}'),
+        leading: new Icon(Icons.map),
+        onTap: () {
+          print(gastos.monto);
+        },
+      );
+    });*/
   }
 
-  String TIngresos() {
-    Ingresos = 0;
-    for (var i in Lingresos) {
-      Ingresos += i;
-    }
-    return "RD " + Ingresos.toStringAsFixed(2);
-  }
 
-  String TGastos() {
-    Gastos = 0;
-    for (var i in LGastos) {
-      Gastos += i;
-    }
-    return "RD " + Gastos.toStringAsFixed(2);
-  }
+
 }
