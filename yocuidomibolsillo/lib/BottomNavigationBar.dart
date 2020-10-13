@@ -23,7 +23,7 @@ class _HomeState extends State<BottomNav> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Flutter App'),
+        title: Text('YO CUIDO TU BOLSILLO'),
       ),
       body: _children[_currentIndex], // new
       bottomNavigationBar: BottomNavigationBar(
@@ -31,15 +31,15 @@ class _HomeState extends State<BottomNav> {
         currentIndex: _currentIndex, // new
         items: [
           BottomNavigationBarItem(
-            icon: new Icon(Icons.home),
+            icon: new Icon(Icons.home,color: Colors.blue,),
             title: new Text('Home'),
           ),
           BottomNavigationBarItem(
-            icon: new Icon(Icons.add),
+            icon: new Icon(Icons.format_line_spacing,color:Colors.red),
             title: new Text('Transacciones'),
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.monetization_on),
+              icon: Icon(Icons.monetization_on,color: Colors.green,),
               title: Text('Ahorro')
           )
         ],

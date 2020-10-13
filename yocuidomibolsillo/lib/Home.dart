@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:yocuidomibolsillo/Lista.dart';
 
 void main() => runApp(Home());
-List<double> Lingresos=new List<double>();
-List<double> LGastos=new List<double>();
+List<double> Lingresos = new List<double>();
+List<double> LGastos = new List<double>();
 double Ingresos = 0;
 double Gastos = 0;
 
@@ -13,11 +13,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo Application',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: MyHomePage(title: 'Complex layout example'),
+      home: MyHomePage(),
     );
   }
 }
@@ -39,6 +35,17 @@ class MyHomePage extends StatelessWidget {
   }
 }
 
+Widget _buildItem(Country country) {
+  return new ListTile(
+    title: new Text(country.name),
+    subtitle: new Text('Capital: ${country.capital}'),
+    leading: new Icon(Icons.map),
+    onTap: () {
+      print(country.name);
+    },
+  );
+}
+
 class ProductBox extends StatelessWidget {
   ProductBox({Key key, this.description, this.Monto, this.tipo})
       : super(key: key);
@@ -46,78 +53,119 @@ class ProductBox extends StatelessWidget {
   final double Monto;
   final String tipo;
 
+  final List<String> entries = <String>['A', 'B', 'C'];
+  final List<int> colorCodes = <int>[600, 500, 100];
+
   Widget build(BuildContext context) {
     return Container(
+      height: 800,
       decoration: const BoxDecoration(
         border: Border(
-          top: BorderSide(
-              width: 1.0, color: Color(0xFFFFFFFFFF)),
-          left: BorderSide(
-              width: 1.0, color: Color(0xFFFFFFFFFF)),
-          right: BorderSide(
-              width: 1.0, color: Color(0xFFFF000000)),
-          bottom: BorderSide(
-              width: 1.0, color: Color(0xFFFF000000)),
+          top: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
+          left: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
+          right: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
+          bottom: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
         ),
       ),
       padding: EdgeInsets.all(2),
-      height: 400,
       child: Card(
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: <
-            Widget>[
-          Expanded(
-            child: Container(
-
-              color: Colors.black87,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Text("Saldo Actual en Cuenta",
-                      style: TextStyle(fontSize: 20, color: Colors.white60)),
-                  Text(Saldo(),
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                          color: Colors.white)),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Icon(
-                          Icons.trending_up,
-                          color: Colors.green,
-                          size: 30.0,
-                          semanticLabel: 'Text to announce in accessibility modes',
-                        ),
-                        Text("Ingresos",
-                            style: TextStyle(fontSize: 20, color: Colors.white60)),
-                        Text(TIngresos(),
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25,
-                                color: Colors.green)),
-                      ]),
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Icon(
-                          Icons.trending_down,
-                          color: Colors.red,
-                          size: 30.0,
-                          semanticLabel: 'Text to announce in accessibility modes',
-                        ),
-                        Text("Gastos",
-                            style: TextStyle(fontSize: 20, color: Colors.white60)),
-                        Text(TGastos(),
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25,
-                                color: Colors.red)),
-                      ]),
-                ],
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  height: 350,
+                  color: Colors.black87,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      Text(description,
+                          style:
+                              TextStyle(fontSize: 20, color: Colors.white60)),
+                      Text(Saldo(),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                              color: Colors.white)),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Icon(
+                              Icons.trending_up,
+                              color: Colors.green,
+                              size: 30.0,
+                              semanticLabel:
+                                  'Text to announce in accessibility modes',
+                            ),
+                            Text("Ingresos",
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white60)),
+                            Text(TIngresos(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 25,
+                                    color: Colors.green)),
+                          ]),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Icon(
+                              Icons.trending_down,
+                              color: Colors.red,
+                              size: 30.0,
+                              semanticLabel:
+                                  'Text to announce in accessibility modes',
+                            ),
+                            Text("Gastos",
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.white60)),
+                            Text(TGastos(),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 25,
+                                    color: Colors.red)),
+                          ]),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-        ]),
+              Container(
+                height: 50,
+                child: Text("INGRESOS", style: TextStyle(fontSize: 20, color: Colors.green)),
+              ),
+              Expanded(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        top: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
+                        left: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
+                        right: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
+                        bottom: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
+                      ),
+                    ),
+                    height: 200,
+                    child: ListView(children: countries.map(_buildItem).toList()),
+
+              )),
+              Container(
+                height: 50,
+                child: Text("GASTOS", style: TextStyle(fontSize: 20, color: Colors.red)),
+              ),
+              Expanded(
+                  child: Container(
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          top: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
+                          left: BorderSide(width: 1.0, color: Color(0xFFFFFFFFFF)),
+                          right: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
+                          bottom: BorderSide(width: 1.0, color: Color(0xFFFF000000)),
+                        ),
+                      ),
+                      height: 200,
+                      child: ListView(
+                        children: countries.map(_buildItem).toList(),
+                      ))),
+            ]),
       ),
     );
   }
@@ -128,20 +176,18 @@ class ProductBox extends StatelessWidget {
   }
 
   String TIngresos() {
-    Ingresos=0;
-    for(var i in Lingresos)
-      {
-        Ingresos+=i;
-      }
-    return "RD "+Ingresos.toStringAsFixed(2);
+    Ingresos = 0;
+    for (var i in Lingresos) {
+      Ingresos += i;
+    }
+    return "RD " + Ingresos.toStringAsFixed(2);
   }
 
   String TGastos() {
-    Gastos=0;
-    for(var i in LGastos)
-    {
-      Gastos+=i;
+    Gastos = 0;
+    for (var i in LGastos) {
+      Gastos += i;
     }
-    return "RD "+Gastos.toStringAsFixed(2);
+    return "RD " + Gastos.toStringAsFixed(2);
   }
 }
