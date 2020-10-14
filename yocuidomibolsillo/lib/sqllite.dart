@@ -160,7 +160,13 @@ class DatabaseHelper {
     res.isNotEmpty ? res.map((c) => Gastos.fromMap(c)).toList() : null;
     return list;
   }
-
+  Future<List<Categoria>> getCategoriaIngreso() async {
+    Database db = await instance.database;
+    var res = await db.query(table_Categoria);
+    List<Categoria> list =
+    res.isNotEmpty ? res.map((c) => Categoria.fromMap(c)).toList() : null;
+    return list;
+  }
 
   Future<int> queryCategoriasRowCount() async {
     Database db = await instance.database;
