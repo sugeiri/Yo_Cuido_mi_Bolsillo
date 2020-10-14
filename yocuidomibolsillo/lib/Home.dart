@@ -63,7 +63,7 @@ class _HomePageState extends State<MyHomePage> {
                       children: <Widget>[
                         Text("Saldo Actual en Cuenta",
                             style: TextStyle(fontSize: 20, color: Colors.white60)),
-                        Text("10000,",
+                        Text("RD "+TSaldo.toStringAsFixed(2),
                             style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 30,
@@ -176,6 +176,7 @@ class _HomePageState extends State<MyHomePage> {
       LIngresos += int.parse(row['monto'].toString());
     });
     setState(() {
+      TSaldo=LIngresos-LGastos;
       TIngresos=LIngresos;
       TGastos=LGastos;
     });
