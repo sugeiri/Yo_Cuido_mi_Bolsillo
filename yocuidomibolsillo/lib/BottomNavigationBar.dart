@@ -38,10 +38,10 @@ class _HomeState extends State<BottomNav> {
             icon: new Icon(Icons.format_line_spacing,color:Colors.red),
             title: new Text('Transacciones'),
           ),
-          BottomNavigationBarItem(
+          /*BottomNavigationBarItem(
               icon: Icon(Icons.monetization_on,color: Colors.green,),
               title: Text('Ahorro')
-          )
+          )*/
         ],
       ),
     );
