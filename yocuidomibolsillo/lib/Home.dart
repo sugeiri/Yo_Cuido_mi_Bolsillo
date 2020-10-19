@@ -173,7 +173,7 @@ class _HomePageState extends State<MyHomePage> {
     });
     final Gastos = await dbHelper.queryGastosAllRows();
     Gastos.forEach((row) {
-      LIngresos += int.parse(row['monto'].toString());
+      LGastos += int.parse(row['monto'].toString());
     });
     setState(() {
       TSaldo=LIngresos-LGastos;

@@ -1,11 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:yocuidomibolsillo/sqllite.dart';
+import 'package:intl/intl.dart';
 
 final dbHelper = DatabaseHelper.instance;
 List LCategorias = new List();
-
+List LCategorias_G = new List();
+TextEditingController TextIngreso = new TextEditingController();
+TextEditingController TextGastos = new TextEditingController();
 void main() {
   runApp(Transacciones());
 }
@@ -55,70 +59,38 @@ class _TransaccionesPageState extends State<Transacciones> {
           ),
           body: TabBarView(
             children: [
-             /* Container(
-                height: 1000,
-                width: 1000,
-                child: Column(children: <Widget>[
-                  /*DropdownButton(
-                    value: _currentCity,
-                    items: _dropDownMenuItems,
-                    onChanged: changedDropDownItem,
-                  ),*/
-                  //Row(children: <Widget>[
-                      Form(
-                      key: _formKey,
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                           TextFormField(
-                              keyboardType: TextInputType.number,
-                              // The validator receives the text that the user has entered.
-                             /* validator: (value) {
-                                if (value.isEmpty) {
-                                  return 'Please enter some text';
-                                }
-                                return null;
-                               },*/
-                            )
-
-                            // Add TextFormFields and ElevatedButton here.
-                          ]
-                      ),
-                  ),
-                  //])
-                ]),
-              ),*/
-             /*       Container(
-               height: 1000,
-               width: 1000,
-               child: Form(
-                 key: _formKey,
-                   child: Column(
-                     mainAxisSize: MainAxisSize.min,
-                     children: <Widget>[
-                       TextFormField(
-                         keyboardType: TextInputType.number,
-                       )
-                     ],
-                   )
-               ),
-             ),*/
               Container(
                   height: 1000,
                   width: 1000,
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        DropdownButton(
+                         DropdownButton(
                           value: _currentCity,
                           items: _dropDownMenuItems,
                           onChanged: changedDropDownItem,
                         ),
-                        TextFormField(
+                        TextField(
+                          controller: TextIngreso,
+                          style: Theme.of(context).textTheme.headline5,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly
+                          ], // Only numbers can be entered
+                        ),
+                        /*TextFormField(
                           keyboardType: TextInputType.number,
                           //textInputAction: TextInputAction.continueAction,
-                        )
+                        ),*/
+                        ButtonBar(
+                          children: <Widget>[
+                            FlatButton(
+                              child: Text('Guardar'),
+                              color: Colors.green,
+                              onPressed: _insert_Ingresos,
+                            ),
+                          ],
+                        ),
                       ],
                     ) ,
               ),
@@ -132,12 +104,29 @@ class _TransaccionesPageState extends State<Transacciones> {
                     DropdownButton(
                       value: _currentCity_G,
                       items: _dropDownMenuItems_G,
-                      onChanged: changedDropDownItem,
+                      onChanged: changedDropDownItemG,
                     ),
-                    TextFormField(
+                    /*TextFormField(
                       keyboardType: TextInputType.number,
                       //textInputAction: TextInputAction.continueAction,
-                    )
+                    ),*/
+                    TextField(
+                      controller: TextGastos,
+                      style: Theme.of(context).textTheme.headline5,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ], // Only numbers can be entered
+                    ),
+                    ButtonBar(
+                      children: <Widget>[
+                        FlatButton(
+                          child: Text('Guardar'),
+                          color: Colors.green,
+                          onPressed: _insert_Gastos,
+                        ),
+                      ],
+                    ),
                   ],
                 )
               ),
@@ -147,14 +136,52 @@ class _TransaccionesPageState extends State<Transacciones> {
       ),
     );
   }
+  void _insert_Ingresos() async {
+    final allRows = await dbHelper.queryIngresosRowCount();
+    DateTime now = DateTime.now();
+    String ii_fecha = DateFormat('yyyy-MM-dd').format(now);
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnIdIngresos : allRows+1,
+      DatabaseHelper.columnCategoriaIngresos : 12,
+      DatabaseHelper.columnFechaIngresos : ii_fecha,
+      DatabaseHelper.columnMontoIngresos  : int.parse(TextIngreso.text),
+    };
+    final id = await dbHelper.insertIngresos_(row);
+    print('inserted row id: $id');
+    setState(() {
+      TextIngreso.text="";
+    });
 
+  }
+  void _insert_Gastos() async {
+    final allRows = await dbHelper.queryGastosRowCount();
+    DateTime now = DateTime.now();
+    String ii_fecha = DateFormat('yyyy-MM-dd').format(now);
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnIdGastos : allRows+1,
+      DatabaseHelper.columnCategoriaGastos : 01,
+      DatabaseHelper.columnFechaGastos : ii_fecha,
+      DatabaseHelper.columnMontoGastos  : int.parse(TextGastos.text),
+    };
+    final id = await dbHelper.insertGastos_(row);
+    print('inserted row id: $id');
+    setState(() {
+      TextGastos.text="";
+    });
+  }
   void changedDropDownItem(String selectedCity) {
-    print("Selected city $selectedCity, we are going to refresh the UI");
+    //print("Selected city $selectedCity, we are going to refresh the UI");
     setState(() {
       _currentCity = selectedCity;
     });
   }
 
+  void changedDropDownItemG(String selectedCity) {
+    //print("Selected city $selectedCity, we are going to refresh the UI");
+    setState(() {
+      _currentCity_G = selectedCity;
+    });
+  }
   List<DropdownMenuItem<String>> getDropDownMenuItems() {
     List<DropdownMenuItem<String>> items = new List();
     for (String city in LCategorias) {
@@ -168,6 +195,7 @@ class _TransaccionesPageState extends State<Transacciones> {
     }
     return items;
   }
+
   void _Consulta_Categorias() async {
     List ii_Lcategoria = new List();
     ii_Lcategoria.add('Seleccione Categoria');
@@ -194,7 +222,7 @@ class _TransaccionesPageState extends State<Transacciones> {
 
   List<DropdownMenuItem<String>> getDropDownMenuItems_G() {
     List<DropdownMenuItem<String>> items = new List();
-    for (String city in LCategorias) {
+    for (String city in LCategorias_G) {
       items.add(new DropdownMenuItem(
           value: city,
           child: new Text(city,
@@ -217,7 +245,7 @@ class _TransaccionesPageState extends State<Transacciones> {
         ii_Lcategoria.add(l);
       }
     });
-    LCategorias = ii_Lcategoria;
+    LCategorias_G = ii_Lcategoria;
     _dropDownMenuItems_G = getDropDownMenuItems_G();
     _currentCity_G = _dropDownMenuItems_G[0].value;
     setState(() {});
